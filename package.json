@@ -1,0 +1,30 @@
+{
+  "name": "my-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@reown/appkit": "^1.5.3",
+    "@reown/appkit-adapter-wagmi": "^1.5.3",
+    "@tanstack/react-query": "^5.62.2",
+    "@web3auth/base": "^9.4.5",
+    "@web3auth/ethereum-provider": "^9.4.5",
+    "@web3auth/modal": "^9.4.5",
+    "next": "^15.0.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "viem": "^2.21.54",
+    "wagmi": "^2.13.3"
+  },
+  "devDependencies": {
+    "eslint": "^8",
+    "eslint-config-next": "15.0.3",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1"
+  }
+}
