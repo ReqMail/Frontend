@@ -36,7 +36,7 @@ flowchart TD
     RN -->|<b>Step 9:</b> Creates Payment Request| BC["<div style='font-size:24px;'>⛓️ <b>Blockchain</b></div><br><b>Transaction processed</b>"]:::node
     BC -->|<b>Step 10:</b> Confirms Transaction| RN
     RN -->|<b>Step 11:</b> Pays Request to User2| U2
-    RN -->|<b>Step 12:</b> Generates Invoice (PDF)| PDF["<div style='font-size:24px;'>📄 <b>Invoice PDF</b></div>"]:::node
+    RN -->|<b>Step 12:</b> Generates Invoice PDF| PDF["<div style='font-size:24px;'>📄 <b>Invoice PDF</b></div>"]:::node
     PDF -->|<b>Step 13:</b> Sends Invoice Email| U1
 
     classDef node fill:#6C63FF,stroke:#333,stroke-width:2px,color:#FFF,font-size:16px,text-align:center;
