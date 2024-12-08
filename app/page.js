@@ -4,10 +4,28 @@ import { Web3Auth } from "@web3auth/modal";
 import { AuthAdapter, WEB3AUTH_NETWORK } from "@web3auth/auth-adapter";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
-import RPC from "./utils/rpc";
-import axios from 'axios'
-import { UserCircle2, Wallet, CreditCard, MessageCircle, LogOut, Power } from 'lucide-react';
-
+import axios from 'axios';
+import RPC from './utils/rpc';
+import Image from 'next/image';
+import { 
+  Mail, 
+  ArrowRight, 
+  Globe, 
+  Shield, 
+  Layers, 
+  Zap, 
+  CheckCircle, 
+  Code, 
+  Users, 
+  Briefcase,
+  LogOut,
+  Wallet,
+  BarChart,
+  CreditCard,
+  FileText, 
+  Power,
+  Check,
+} from 'lucide-react';
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
   chainId: "0xaa36a7",
@@ -28,8 +46,24 @@ export const web3auth = new Web3Auth({
   web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_DEVNET,
   privateKeyProvider,
 });
+const FeatureCard = ({ icon: Icon, title, description }) => (
+  <div className="bg-white/10 border border-white/10 rounded-xl p-6 transform transition-all duration-300 hover:scale-105 hover:border-blue-300/50 hover:shadow-xl">
+    <div className="mb-4 bg-blue-500/20 p-3 rounded-full w-fit">
+      <Icon className="text-blue-400" size={28} />
+    </div>
+    <h3 className="text-lg font-semibold text-gray-100 mb-2">{title}</h3>
+    <p className="text-gray-300 text-sm">{description}</p>
+  </div>
+);
 
-export default function Web3AuthComponent() {
+const IntegrationLogo = ({ src, alt }) => (
+  <div className="bg-white/10 p-4 rounded-xl flex items-center justify-center hover:bg-white/20 transition-all">
+    <img src={src} alt={alt} className="h-12 w-auto grayscale hover:grayscale-0 opacity-70 hover:opacity-100 transition-all" />
+  </div>
+);
+
+export default function InMailTreasuryHomepage() {
+  const [activeTab, setActiveTab] = useState('features');
   const [provider, setProvider] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
@@ -46,6 +80,7 @@ export default function Web3AuthComponent() {
       console.error('Error posting user address:', error);
     }
   };
+
   useEffect(() => {
     const init = async () => {
       try {
@@ -84,19 +119,14 @@ export default function Web3AuthComponent() {
       if (web3auth.provider) {
         const address = await RPC.getAccounts(web3auth.provider);
         setWalletAddress(address);
-        console.log("address",address)
 
         const balance = await RPC.getBalance(web3auth.provider);
         setBalance(balance);
-        const privateKey = await web3auth.provider.request({
-          method: "eth_private_key",
-        });
-        console.log("private key",privateKey);
       }
+      
       if (user.email && address) {
         await postUserAddress(user.email, address);
       }
-
     } catch (error) {
       console.error('Error fetching user details', error);
     }
@@ -124,118 +154,276 @@ export default function Web3AuthComponent() {
     setWalletAddress('');
     setBalance('');
   };
-
+  const features = [
+    {
+      icon: Mail,
+      title: "Email-Driven Treasury",
+      description: "Manage crypto finances through simple email commands, no blockchain expertise required."
+    },
+    {
+      icon: Shield,
+      title: "Secure Transactions",
+      description: "Enterprise-grade security with multi-signature and compliance controls."
+    },
+    {
+      icon: Globe,
+      title: "Multi-Currency Support",
+      description: "Seamlessly handle transactions across multiple cryptocurrencies."
+    }
+  ];
   if (!loggedIn) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="bg-white p-8 rounded-xl shadow-lg text-center">
-          <h2 className="text-2xl font-bold mb-4 text-gray-800">Welcome to Web3Auth</h2>
-          <button 
-            onClick={login} 
-            className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition duration-300 flex items-center mx-auto"
-          >
-            <Power className="mr-2" /> Connect Wallet
-          </button>
-        </div>
-      </div>
-    );
-  }
-  const getAccounts = async () => {
-    if (!web3auth.provider) {
-      console.error("Provider not initialized yet");
-      return;
-    }
-  
-    try {
-      const address = await RPC.getAccounts(provider);
-      setWalletAddress(address);
-    } catch (error) {
-      console.error("Error getting accounts:", error);
-    }
-  };
-  const getBalance = async () => {
-    if (!provider) {
-      console.error("Provider not initialized yet");
-      return;
-    }
-  
-    try {
-      const balance = await RPC.getBalance(provider);
-      setBalance(balance);
-    } catch (error) {
-      console.error("Error getting balance:", error);
-    }
-  };
-  
-  const signMessage = async () => {
-    if (!provider) {
-      console.error("Provider not initialized yet");
-      return;
-    }
-  
-    try {
-      const { message, signature } = await RPC.signMessage(provider);
-      console.log("Signed message:", message, signature);
-    } catch (error) {
-      console.error("Error signing message:", error);
-    }
-  };
-  return (
-    <div className="min-h-screen bg-gray-50 p-6 text-black">
-      <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">My Web3 Profile</h1>
-          <button 
-            onClick={logout} 
-            className="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition duration-300 flex items-center"
-          >
-            <LogOut className="mr-2" /> Logout
-          </button>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="bg-gray-100 p-6 rounded-lg">
-            <h2 className="text-xl font-semibold mb-4 flex items-center">
-              <UserCircle2 className="mr-2 text-blue-500" /> User Information
-            </h2>
-            {userInfo && (
-              <div className="space-y-2">
-                <p><strong>Name:</strong> {userInfo.name}</p>
-                <p><strong>Email:</strong> {userInfo.email}</p>
-              </div>
-            )}
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white">
+        {/* Navigation */}
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-900/50 backdrop-blur-md">
+          <div className="container mx-auto flex justify-between items-center py-4 px-6">
+            <div className="flex items-center space-x-3">
+              <Mail className="text-blue-400" size={28} />
+              <span className="text-xl font-bold text-white">InMail Treasury</span>
+            </div>
+            <div className="flex items-center space-x-6">
+              <a href="#" className="text-gray-300 hover:text-white transition-colors">Features</a>
+              <a href="#" className="text-gray-300 hover:text-white transition-colors">How It Works</a>
+              <a href="#" className="text-gray-300 hover:text-white transition-colors">Pricing</a>
+              <button className="bg-blue-500 text-white px-5 py-2 rounded-full hover:bg-blue-600 transition-colors flex items-center" onClick={login} >
+                Get Started <ArrowRight className="ml-2" size={18} />
+              </button>
+            </div>
           </div>
+        </nav>
 
-          <div className="bg-gray-100 p-6 rounded-lg">
-            <h2 className="text-xl font-semibold mb-4 flex items-center">
-              <Wallet className="mr-2 text-green-500" /> Wallet Details
+        {/* Hero Section */}
+        <div className="container mx-auto px-6 pt-24 relative">
+          <div className="grid gap-12 items-center">
+            <div className='flex w-full'>
+            <div className="space-y-6 pt-[2rem] pb-[2rem] w-[60%]">
+              <div className="bg-blue-500/20 px-4 py-2 rounded-full w-fit">
+                <span className="text-blue-400 text-sm">Revolutionizing Crypto Treasury</span>
+              </div>
+              <h1 className="text-5xl font-bold leading-tight text-white">
+                Simplify Crypto Management with Email
+              </h1>
+              <p className="text-gray-300 text-lg">
+                Transform your organization's crypto treasury management with intuitive, email-driven financial workflows powered by Request Network.
+              </p>
+              <div className="flex space-x-4">
+                <button className="bg-blue-500 text-white px-8 py-3 rounded-full hover:bg-blue-600 transition-colors flex items-center" onClick={login} >
+                  Connect Wallet <ArrowRight className="ml-2" size={20} />
+                </button>
+                <button className="border border-white/30 text-white px-8 py-3 rounded-full hover:bg-white/10 transition-colors">
+                  Learn More
+                </button>
+              </div>
+            </div>
+            </div>
+
+            <div className="relative">
+              <div className="absolute -inset-2 bg-blue-600/20 rounded-2xl blur-xl"></div>
+              <div className="relative bg-white/5 border border-white/20 rounded-2xl p-6 backdrop-blur-md">
+                <div className="grid grid-cols-3 gap-4">
+                  {features.map((feature, index) => (
+                    <FeatureCard key={index} {...feature} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+
+        {/* Integration Section */}
+        <div className="container mx-auto px-6 py-16">
+          <div className="text-center mb-12">
+            <h2 className="text-5xl font-bold text-white mb-4">Seamless Integrations</h2>
+            <p className="text-gray-300 max-w-2xl mx-auto">
+              Connect with your favorite tools and platforms to streamline your crypto treasury management.
+            </p>
+          </div>
+          <div className="grid grid-cols-6 gap-6">
+            {['ethereum', 'request', 'google', 'metamask', 'chainlink', 'stripe'].map((logo) => (
+              <IntegrationLogo 
+                key={logo} 
+                src={`/logos/${logo}-logo.png`} 
+                alt={`${logo} logo`} 
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Use Cases */}
+        <div className="container mx-auto px-6 py-16">
+          <div className="text-center mb-12">
+            <h2 className="text-5xl font-bold text-white mb-4">Designed for Every Organization</h2>
+            <p className="text-gray-300 max-w-2xl mx-auto">
+              From startups to enterprises, InMail Treasury provides flexible crypto financial management.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              { icon: Briefcase, title: "Corporate Treasury", description: "Manage multinational crypto holdings with ease." },
+              { icon: Code, title: "Crypto Projects", description: "Streamline financial operations for blockchain startups." },
+              { icon: Users, title: "DAOs", description: "Simplify decentralized organization financial workflows." }
+            ].map((useCase, index) => (
+              <div 
+                key={index} 
+                className="bg-white/10 border border-white/10 rounded-xl p-6 hover:border-blue-300/50 hover:bg-white/20 transition-all"
+              >
+                <div className="mb-4 bg-blue-500/20 p-3 rounded-full w-fit">
+                  <useCase.icon className="text-blue-400" size={28} />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-100 mb-2">{useCase.title}</h3>
+                <p className="text-gray-300 text-sm">{useCase.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* CTA Section */}
+        <div className="container mx-auto px-6 py-16">
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-12 text-center">
+            <h2 className="text-4xl font-bold text-white mb-6">
+              Ready to Revolutionize Your Crypto Treasury?
             </h2>
-            <div className="space-y-2">
-            <p><strong>Address:</strong> {walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : 'N/A'}</p>
-            <p><strong>Balance:</strong> {balance ? `${balance} ETH` : 'Loading...'}</p>
+            <p className="text-white/80 max-w-2xl mx-auto mb-8">
+              Join InMail Treasury and transform how your organization manages crypto finances.
+            </p>
+            <div className="flex justify-center space-x-4">
+              <button className="bg-white text-blue-600 px-10 py-4 rounded-full hover:bg-blue-50 transition-colors flex items-center">
+                Get Started <CheckCircle className="ml-2" size={20} />
+              </button>
+              <button className="border border-white text-white px-10 py-4 rounded-full hover:bg-white/10 transition-colors">
+                Book a Demo
+              </button>
             </div>
           </div>
         </div>
 
-        <div className="mt-6 grid md:grid-cols-3 gap-4">
-          <button 
-            onClick={getAccounts} 
-            className="bg-blue-100 text-blue-600 p-4 rounded-lg hover:bg-blue-200 flex items-center justify-center"
-          >
-            <Wallet className="mr-2" /> Get Accounts
-          </button>
-          <button 
-            onClick={getBalance} 
-            className="bg-green-100 text-green-600 p-4 rounded-lg hover:bg-green-200 flex items-center justify-center"
-          >
-            <CreditCard className="mr-2" /> Get Balance
-          </button>
-          <button 
-            onClick={signMessage} 
-            className="bg-purple-100 text-purple-600 p-4 rounded-lg hover:bg-purple-200 flex items-center justify-center"
-          >
-            <MessageCircle className="mr-2" /> Sign Message
-          </button>
+        {/* Footer */}
+        <footer className="bg-gray-900 border-t border-white/10">
+          <div className="container mx-auto px-6 py-12">
+            <div className="grid md:grid-cols-4 gap-8">
+              <div>
+                <div className="flex items-center space-x-3 mb-4">
+                  <Mail className="text-blue-400" size={28} />
+                  <span className="text-xl font-bold text-white">InMail Treasury</span>
+                </div>
+                <p className="text-gray-400 text-sm">
+                  Simplifying crypto treasury management through email-driven workflows.
+                </p>
+              </div>
+              {['Product', 'Company', 'Resources'].map((section) => (
+                <div key={section}>
+                  <h4 className="text-white font-semibold mb-4">{section}</h4>
+                  <ul className="space-y-2 text-gray-400">
+                    <li><a href="#" className="hover:text-white">Link 1</a></li>
+                    <li><a href="#" className="hover:text-white">Link 2</a></li>
+                    <li><a href="#" className="hover:text-white">Link 3</a></li>
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </footer>
+      </div>
+    );
+  }
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white">
+      {/* Navigation - identical to landing page */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-900/50 backdrop-blur-md">
+        <div className="container mx-auto flex justify-between items-center py-4 px-6">
+          <div className="flex items-center space-x-3">
+            <Mail className="text-blue-400" size={28} />
+            <span className="text-xl font-bold text-white">InMail Treasury</span>
+          </div>
+          <div className="flex items-center space-x-6">
+            <a href="#" className="text-gray-300 hover:text-white transition-colors">Features</a>
+            <a href="#" className="text-gray-300 hover:text-white transition-colors">How It Works</a>
+            <a href="#" className="text-gray-300 hover:text-white transition-colors">Pricing</a>
+            <button 
+              className="bg-blue-500 text-white px-5 py-2 rounded-full hover:bg-blue-600 transition-colors flex items-center" 
+              onClick={logout}
+            >
+              Logout <LogOut className="ml-2" size={18} />
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      <div className="container mx-auto px-6 py-24">
+        <div className="grid md:grid-cols-3 gap-6">
+          {/* User Profile Card - with dark theme styling */}
+          <div className="bg-white/10 border border-white/20 rounded-xl shadow-xl p-6 backdrop-blur-md">
+            <h2 className="text-xl font-semibold mb-4 text-gray-100 flex items-center">
+              <Wallet className="mr-2 text-blue-400" /> Wallet Profile
+            </h2>
+            {userInfo && (
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <img 
+                    src={userInfo.profileImage || '/default-avatar.png'} 
+                    alt="Profile" 
+                    className="w-16 h-16 rounded-full border-2 border-blue-500/30"
+                  />
+                  <div>
+                    <p className="font-medium text-gray-100">{userInfo.name}</p>
+                    <p className="text-sm text-gray-400">{userInfo.email}</p>
+                  </div>
+                </div>
+                
+                <div className="bg-blue-600 p-4 rounded-lg">
+                  <p className="text-sm text-gray-300 mb-2">Wallet Address</p>
+                  <p className="font-mono text-sm text-blue-200">
+                    {walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : 'N/A'}
+                  </p>
+                </div>
+                
+                <div className="bg-green-600 p-4 rounded-lg">
+                  <p className="text-sm text-gray-300 mb-2">Current Balance</p>
+                  <p className="font-semibold text-green-200">
+                    {balance ? `${balance} ETH` : 'Loading...'}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Quick Actions - with dark theme styling */}
+          <div className="bg-white/10 border border-white/20 rounded-xl shadow-xl p-6 backdrop-blur-md">
+            <h2 className="text-xl font-semibold mb-4 text-gray-100">Quick Actions</h2>
+            <div className="space-y-4">
+              <button 
+                className="w-full bg-blue-600 text-blue-300 py-3 rounded-lg hover:bg-blue-500/30 flex items-center justify-center"
+              >
+                <BarChart className="mr-2" /> Treasury Overview
+              </button>
+              <button 
+                className="w-full bg-green-600 text-green-300 py-3 rounded-lg hover:bg-green-500/30 flex items-center justify-center"
+              >
+                <FileText className="mr-2" /> Payment Requests
+              </button>
+              <button 
+                className="w-full bg-purple-600 text-purple-300 py-3 rounded-lg hover:bg-purple-500/30 flex items-center justify-center"
+              >
+                <Mail className="mr-2" /> Send Email Command
+              </button>
+            </div>
+          </div>
+
+          {/* Recent Activity - with dark theme styling */}
+          <div className="bg-white/10 border border-white/20 rounded-xl shadow-xl p-6 backdrop-blur-md">
+            <h2 className="text-xl font-semibold mb-4 text-gray-100">Recent Activity</h2>
+            <div className="space-y-4">
+              <div className="bg-gray-500/10 p-4 rounded-lg">
+                <p className="text-sm font-medium text-gray-200">Wallet Connected</p>
+                <p className="text-xs text-gray-400">Just now</p>
+              </div>
+              <div className="bg-gray-500/10 p-4 rounded-lg">
+                <p className="text-sm font-medium text-gray-200">Initial Balance Synced</p>
+                <p className="text-xs text-gray-400">A moment ago</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
