@@ -1,4 +1,4 @@
-# ReqMail Frontend
+# ReqMail 
 
 ReqMail is a groundbreaking platform that simplifies cryptocurrency transactions for everyone, including non-crypto organizations. By using a familiar tool—**email**—ReqMail enables users to perform blockchain actions like creating requests, transferring assets, and generating invoices, all with minimal effort and no need for prior blockchain expertise.  
 
