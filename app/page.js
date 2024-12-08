@@ -62,7 +62,7 @@ const IntegrationLogo = ({ src, alt }) => (
   </div>
 );
 
-export default function InMailTreasuryHomepage() {
+export default function ReqMailTreasuryHomepage() {
   const [activeTab, setActiveTab] = useState('features');
   const [provider, setProvider] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
@@ -71,9 +71,9 @@ export default function InMailTreasuryHomepage() {
   const [balance, setBalance] = useState('');
   const postUserAddress = async (email, address) => {
     try {
-      await axios.post('http://localhost:3000/address', {
-        email,
-        walletAddress: address
+      await axios.post('http://localhost:5500/address', {
+        emailAddress:email,
+        accountAddress: address
       });
       console.log('User address posted successfully');
     } catch (error) {
@@ -122,11 +122,12 @@ export default function InMailTreasuryHomepage() {
 
         const balance = await RPC.getBalance(web3auth.provider);
         setBalance(balance);
+        if (user.email && address) {
+          await postUserAddress(user.email, address);
+        }
       }
       
-      if (user.email && address) {
-        await postUserAddress(user.email, address);
-      }
+      
     } catch (error) {
       console.error('Error fetching user details', error);
     }
@@ -179,7 +180,7 @@ export default function InMailTreasuryHomepage() {
           <div className="container mx-auto flex justify-between items-center py-4 px-6">
             <div className="flex items-center space-x-3">
               <Mail className="text-blue-400" size={28} />
-              <span className="text-xl font-bold text-white">InMail Treasury</span>
+              <span className="text-xl font-bold text-white">ReqMail Treasury</span>
             </div>
             <div className="flex items-center space-x-6">
               <a href="#" className="text-gray-300 hover:text-white transition-colors">Features</a>
@@ -255,7 +256,7 @@ export default function InMailTreasuryHomepage() {
           <div className="text-center mb-12">
             <h2 className="text-5xl font-bold text-white mb-4">Designed for Every Organization</h2>
             <p className="text-gray-300 max-w-2xl mx-auto">
-              From startups to enterprises, InMail Treasury provides flexible crypto financial management.
+              From startups to enterprises, ReqMail Treasury provides flexible crypto financial management.
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
@@ -285,7 +286,7 @@ export default function InMailTreasuryHomepage() {
               Ready to Revolutionize Your Crypto Treasury?
             </h2>
             <p className="text-white/80 max-w-2xl mx-auto mb-8">
-              Join InMail Treasury and transform how your organization manages crypto finances.
+              Join ReqMail Treasury and transform how your organization manages crypto finances.
             </p>
             <div className="flex justify-center space-x-4">
               <button className="bg-white text-blue-600 px-10 py-4 rounded-full hover:bg-blue-50 transition-colors flex items-center">
@@ -305,7 +306,7 @@ export default function InMailTreasuryHomepage() {
               <div>
                 <div className="flex items-center space-x-3 mb-4">
                   <Mail className="text-blue-400" size={28} />
-                  <span className="text-xl font-bold text-white">InMail Treasury</span>
+                  <span className="text-xl font-bold text-white">ReqMail Treasury</span>
                 </div>
                 <p className="text-gray-400 text-sm">
                   Simplifying crypto treasury management through email-driven workflows.
@@ -334,7 +335,7 @@ export default function InMailTreasuryHomepage() {
         <div className="container mx-auto flex justify-between items-center py-4 px-6">
           <div className="flex items-center space-x-3">
             <Mail className="text-blue-400" size={28} />
-            <span className="text-xl font-bold text-white">InMail Treasury</span>
+            <span className="text-xl font-bold text-white">ReqMail Treasury</span>
           </div>
           <div className="flex items-center space-x-6">
             <a href="#" className="text-gray-300 hover:text-white transition-colors">Features</a>
